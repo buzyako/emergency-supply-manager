@@ -13,14 +13,14 @@ export function FoodStorageTracker() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formData, setFormData] = useState<{
     name: string
-    quantity: number
+    quantity: string
     unit: string
     expiryDate: string
     location: string
     category: string
   }>({
     name: "",
-    quantity: 1,
+    quantity: "",
     unit: "pieces",
     expiryDate: "",
     location: "",
@@ -50,9 +50,12 @@ export function FoodStorageTracker() {
       return
     }
 
+    // Convert quantity to number, default to 1 if empty or invalid
+    const quantity = formData.quantity === "" ? 1 : parseInt(formData.quantity) || 1
+
     if (editingId) {
       const updated = items.map((item) =>
-        item.id === editingId ? { ...item, ...formData, category: formData.category as FoodItem['category'], updatedAt: new Date().toISOString() } : item,
+        item.id === editingId ? { ...item, ...formData, quantity, category: formData.category as FoodItem['category'], updatedAt: new Date().toISOString() } : item,
       )
       saveItems(updated)
       setEditingId(null)
@@ -60,6 +63,7 @@ export function FoodStorageTracker() {
       const newItem: FoodItem = {
         id: Date.now().toString(),
         ...formData,
+        quantity,
         category: formData.category as FoodItem['category'],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -69,7 +73,7 @@ export function FoodStorageTracker() {
 
     setFormData({
       name: "",
-      quantity: 1,
+      quantity: "",
       unit: "pieces",
       expiryDate: "",
       location: "",
@@ -81,7 +85,7 @@ export function FoodStorageTracker() {
   const handleEdit = (item: FoodItem) => {
     setFormData({
       name: item.name,
-      quantity: item.quantity,
+      quantity: item.quantity.toString(),
       unit: item.unit,
       expiryDate: item.expiryDate,
       location: item.location,
@@ -159,7 +163,8 @@ export function FoodStorageTracker() {
                   type="number"
                   min="1"
                   value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: Number.parseInt(e.target.value) || 1 })}
+                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                  placeholder="1"
                 />
               </div>
               <div>

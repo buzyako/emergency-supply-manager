@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import type { GoBag, GoBagItem } from "@/lib/types"
+import { storage } from "@/lib/storage"
 
 export function GoBagManager() {
   const [bags, setBags] = useState<GoBag[]>([])
@@ -16,16 +17,23 @@ export function GoBagManager() {
     person: "",
     items: [] as GoBagItem[],
   })
-  const [newItem, setNewItem] = useState({ name: "", quantity: 1 })
+  const [newItem, setNewItem] = useState({ name: "", quantity: "" })
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("goBags") || "[]")
+    const saved = storage.load<GoBag>("goBags")
     setBags(saved)
+    console.log(`[GoBags] Loaded ${saved.length} bags from storage`)
   }, [])
 
   const saveBags = (newBags: GoBag[]) => {
     setBags(newBags)
-    localStorage.setItem("goBags", JSON.stringify(newBags))
+    const success = storage.save("goBags", newBags)
+    if (success) {
+      console.log(`[GoBags] Successfully saved ${newBags.length} bags`)
+    } else {
+      console.error(`[GoBags] Failed to save ${newBags.length} bags`)
+      alert("Failed to save data. Please try again.")
+    }
   }
 
   const handleAddBag = () => {
@@ -56,11 +64,15 @@ export function GoBagManager() {
 
   const handleAddItem = () => {
     if (!newItem.name) return
+    
+    // Convert quantity to number, default to 1 if empty or invalid
+    const quantity = newItem.quantity === "" ? 1 : parseInt(newItem.quantity) || 1
+    
     setFormData({
       ...formData,
-      items: [...formData.items, { id: Date.now().toString(), ...newItem }],
+      items: [...formData.items, { id: Date.now().toString(), ...newItem, quantity }],
     })
-    setNewItem({ name: "", quantity: 1 })
+    setNewItem({ name: "", quantity: "" })
   }
 
   const handleRemoveItem = (itemId: string) => {
@@ -152,8 +164,9 @@ export function GoBagManager() {
                   type="number"
                   min="1"
                   value={newItem.quantity}
-                  onChange={(e) => setNewItem({ ...newItem, quantity: Number.parseInt(e.target.value) || 1 })}
+                  onChange={(e) => setNewItem({ ...newItem, quantity: e.target.value })}
                   className="w-20"
+                  placeholder="1"
                 />
                 <Button onClick={handleAddItem} variant="outline">
                   Add
