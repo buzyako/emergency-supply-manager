@@ -1,5 +1,16 @@
 # Emergency Supply Manager - Deployment Guide
 
+## Multi-User Deployment Overview
+
+The Emergency Supply Manager supports unlimited users through a single deployment URL. Each user gets their own personalized experience with complete data privacy.
+
+### **Key Features:**
+- **🌐 Single URL**: All users access the same deployment
+- **📱 Personal Data**: Each device stores data locally
+- **🔒 Complete Privacy**: No data sharing between users
+- **💾 No Database**: No server or cloud storage required
+- **⚡ Instant Setup**: No registration or configuration needed
+
 ## System Analysis Summary
 
 ### **Current System Status**

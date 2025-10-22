@@ -9,6 +9,13 @@ A comprehensive, spiritually-grounded emergency preparedness system built with N
 - **Faith-Based Guidance**: LDS principles integrated throughout
 - **Scriptural Foundation**: Doctrine & Covenants and Book of Mormon quotes
 
+### 👥 Multi-User Personalization
+- **Individual Data Storage**: Each phone stores personal data locally
+- **No Account Required**: Just open the URL on any device
+- **Complete Privacy**: No data sharing between users
+- **Personalized Experience**: Custom progress tracking per user
+- **Offline Functionality**: Works without internet on each device
+
 ### 📊 Comprehensive Preparedness Tracking
 - **7 Categories**: Food, Water, Financial, Communication, Spiritual, Emergency Kit, Go Bags
 - **Progress Visualization**: Real-time progress bars and percentages
@@ -74,6 +81,21 @@ npm run start
 2. Enter your app URL
 3. Generate and download APK
 4. Install on your mobile device
+
+## 👥 Multi-User Setup
+
+### Individual User Experience
+- **📱 Each Phone**: Gets its own personalized app experience
+- **🔒 Data Privacy**: Personal data stored locally on each device
+- **🌐 Same URL**: All users access the same deployment
+- **💾 No Cloud**: No server or database required
+- **⚡ Instant**: No setup or registration needed
+
+### Family/Community Usage
+- **👨‍👩‍👧‍👦 Family**: Each member tracks their own preparedness
+- **🏘️ Community**: Individual families manage their supplies
+- **👥 Church Group**: Members track personal emergency readiness
+- **🏢 Workplace**: Employees manage individual emergency kits
 
 ## 🏠 Self-Hosting
 
@@ -205,6 +227,8 @@ npm run type-check   # Run TypeScript check
 - **No Cloud Dependencies**: Works completely offline
 - **Privacy First**: No data collection or tracking
 - **Secure**: HTTPS and security headers
+- **Multi-User Privacy**: Each device has isolated data storage
+- **No Data Sharing**: Personal information stays on individual devices
 
 ## 📞 Support
 

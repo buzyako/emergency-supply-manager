@@ -1,5 +1,16 @@
 # 📱 Emergency Supply Manager - Mobile Installation Guide
 
+## 👥 **Multi-User Mobile Installation**
+
+The Emergency Supply Manager supports unlimited users through a single deployment URL. Each mobile device gets its own personalized experience with complete data privacy.
+
+### **Key Benefits:**
+- **🌐 Single URL**: All users access the same deployment
+- **📱 Personal Data**: Each device stores data locally
+- **🔒 Complete Privacy**: No data sharing between users
+- **💾 No Database**: No server or cloud storage required
+- **⚡ Instant Setup**: No registration or configuration needed
+
 ## 🚀 **Quick Mobile Installation**
 
 ### **Step 1: Access from Mobile Browser**

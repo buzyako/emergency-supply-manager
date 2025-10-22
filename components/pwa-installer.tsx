@@ -134,8 +134,14 @@ export function PWAInstaller() {
     )
   }
 
-  if (!showInstallPrompt) {
+  // Always show install option for mobile users
+  if (!showInstallPrompt && !isMobile()) {
     return null
+  }
+
+  // Check if mobile device
+  function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   }
 
   return (
