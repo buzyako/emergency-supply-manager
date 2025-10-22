@@ -94,6 +94,7 @@ export default function Home() {
                   setCurrentPage("food")
                   setMobileMenuOpen(false)
                 }}
+                data-tab="food"
                 className="w-full justify-start text-sm py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
               >
                 <div className="flex items-center gap-3">
@@ -107,6 +108,7 @@ export default function Home() {
                   setCurrentPage("kit")
                   setMobileMenuOpen(false)
                 }}
+                data-tab="kit"
                 className="w-full justify-start text-sm py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
               >
                 <div className="flex items-center gap-3">
@@ -194,6 +196,7 @@ export default function Home() {
             <Button
               variant={currentPage === "food" ? "default" : "ghost"}
               onClick={() => setCurrentPage("food")}
+              data-tab="food"
               className={`w-full justify-start text-base py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 group ${currentPage === "food" ? "" : "hover:bg-slate-100"}`}
             >
               <div className="flex items-center gap-3">
@@ -207,6 +210,7 @@ export default function Home() {
             <Button
               variant={currentPage === "kit" ? "default" : "ghost"}
               onClick={() => setCurrentPage("kit")}
+              data-tab="kit"
               className={`w-full justify-start text-base py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 group ${currentPage === "kit" ? "" : "hover:bg-slate-100"}`}
             >
               <div className="flex items-center gap-3">

@@ -152,10 +152,37 @@ export function Dashboard() {
             </ul>
           </div>
           <div className="flex flex-col gap-2 pt-4">
-            <Button size="lg" className="w-full">
+            <Button 
+              size="lg" 
+              className="w-full"
+              onClick={() => {
+                // Navigate to food storage page
+                const foodTab = document.querySelector('[data-tab="food"]') as HTMLElement;
+                if (foodTab) {
+                  foodTab.click();
+                } else {
+                  // Fallback: show alert with instructions
+                  alert("Please use the navigation menu to go to 'Food Storage' to add food items.");
+                }
+              }}
+            >
               🥫 Add Food Items
             </Button>
-            <Button size="lg" variant="outline" className="w-full bg-transparent">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="w-full bg-transparent"
+              onClick={() => {
+                // Navigate to emergency kit page
+                const kitTab = document.querySelector('[data-tab="kit"]') as HTMLElement;
+                if (kitTab) {
+                  kitTab.click();
+                } else {
+                  // Fallback: show alert with instructions
+                  alert("Please use the navigation menu to go to 'Emergency Kit' to add kit items.");
+                }
+              }}
+            >
               🧰 Add Emergency Kit
             </Button>
           </div>
