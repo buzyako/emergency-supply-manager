@@ -201,7 +201,7 @@ export function EmergencyKitManager() {
                   setEditingId(null)
                   setFormData({
                     name: "",
-                    quantity: 1,
+                    quantity: "",
                     category: "first-aid",
                     lastChecked: new Date().toISOString().split("T")[0],
                     notes: "",

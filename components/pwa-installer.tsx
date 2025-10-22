@@ -72,19 +72,42 @@ export function PWAInstaller() {
   }, [])
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return
-
-    deferredPrompt.prompt()
-    const { outcome } = await deferredPrompt.userChoice
-    
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt')
+    if (deferredPrompt) {
+      // Use the browser's install prompt if available
+      deferredPrompt.prompt()
+      const { outcome } = await deferredPrompt.userChoice
+      
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt')
+        setIsInstalled(true)
+      } else {
+        console.log('User dismissed the install prompt')
+      }
+      
+      setDeferredPrompt(null)
+      setShowInstallPrompt(false)
     } else {
-      console.log('User dismissed the install prompt')
+      // Fallback: Show manual installation instructions
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      const isAndroid = /Android/.test(navigator.userAgent)
+      
+      if (isIOS) {
+        alert(`To install this app on iOS:
+1. Tap the Share button (📤) at the bottom
+2. Scroll down and tap "Add to Home Screen"
+3. Tap "Add" to confirm`)
+      } else if (isAndroid) {
+        alert(`To install this app on Android:
+1. Tap the three dots menu (⋮) in your browser
+2. Look for "Add to Home Screen" or "Install App"
+3. Tap to install`)
+      } else {
+        alert(`To install this app:
+1. Look for the install icon in your browser's address bar
+2. Or use your browser's menu to "Add to Home Screen"
+3. Follow your browser's installation prompts`)
+      }
     }
-    
-    setDeferredPrompt(null)
-    setShowInstallPrompt(false)
   }
 
   const handleShareClick = async () => {
@@ -134,14 +157,14 @@ export function PWAInstaller() {
     )
   }
 
-  // Always show install option for mobile users
-  if (!showInstallPrompt && !isMobile()) {
-    return null
+  // Check if mobile device
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   }
 
-  // Check if mobile device
-  function isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  // Always show install option for mobile users, or if we have a deferred prompt
+  if (!showInstallPrompt && !isMobile() && !deferredPrompt) {
+    return null
   }
 
   return (
@@ -156,7 +179,11 @@ export function PWAInstaller() {
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex flex-col gap-2">
-          <Button onClick={handleInstallClick} className="w-full">
+          <Button 
+            onClick={handleInstallClick} 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            size="lg"
+          >
             📲 Install App
           </Button>
           <Button onClick={handleShareClick} variant="outline" className="w-full">
@@ -169,6 +196,13 @@ export function PWAInstaller() {
           <p>• Fast loading</p>
           <p>• Mobile optimized</p>
         </div>
+        {!deferredPrompt && isMobile() && (
+          <div className="mt-3 p-3 bg-blue-100 rounded-lg">
+            <p className="text-xs text-blue-700 font-medium">
+              💡 If the install button doesn't work, use your browser's menu to "Add to Home Screen"
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

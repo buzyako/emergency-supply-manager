@@ -201,7 +201,7 @@ export function FoodStorageTracker() {
                   setEditingId(null)
                   setFormData({
                     name: "",
-                    quantity: 1,
+                    quantity: "",
                     unit: "pieces",
                     expiryDate: "",
                     location: "",
