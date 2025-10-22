@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import type { KitItem } from "@/lib/types"
+import { storage } from "@/lib/storage"
 
 export function EmergencyKitManager() {
   const [items, setItems] = useState<KitItem[]>([])
@@ -25,13 +26,20 @@ export function EmergencyKitManager() {
   })
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("kitItems") || "[]")
+    const saved = storage.load<KitItem>("kitItems")
     setItems(saved)
+    console.log(`[EmergencyKit] Loaded ${saved.length} items from storage`)
   }, [])
 
   const saveItems = (newItems: KitItem[]) => {
     setItems(newItems)
-    localStorage.setItem("kitItems", JSON.stringify(newItems))
+    const success = storage.save("kitItems", newItems)
+    if (success) {
+      console.log(`[EmergencyKit] Successfully saved ${newItems.length} items`)
+    } else {
+      console.error(`[EmergencyKit] Failed to save ${newItems.length} items`)
+      alert("Failed to save data. Please try again.")
+    }
   }
 
   const handleAddItem = () => {

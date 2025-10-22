@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import type { FoodItem } from "@/lib/types"
+import { storage } from "@/lib/storage"
 
 export function FoodStorageTracker() {
   const [items, setItems] = useState<FoodItem[]>([])
@@ -27,13 +28,20 @@ export function FoodStorageTracker() {
   })
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("foodItems") || "[]")
+    const saved = storage.load<FoodItem>("foodItems")
     setItems(saved)
+    console.log(`[FoodStorage] Loaded ${saved.length} items from storage`)
   }, [])
 
   const saveItems = (newItems: FoodItem[]) => {
     setItems(newItems)
-    localStorage.setItem("foodItems", JSON.stringify(newItems))
+    const success = storage.save("foodItems", newItems)
+    if (success) {
+      console.log(`[FoodStorage] Successfully saved ${newItems.length} items`)
+    } else {
+      console.error(`[FoodStorage] Failed to save ${newItems.length} items`)
+      alert("Failed to save data. Please try again.")
+    }
   }
 
   const handleAddItem = () => {

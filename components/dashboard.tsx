@@ -10,6 +10,7 @@ import type { FoodItem, KitItem, GoBag } from "@/lib/types"
 import { getDailyQuote, getRandomQuote, InspirationalQuote } from "@/lib/quotes"
 import { calculateOverallProgress, getAchievedMilestones, getNextMilestone, PreparednessLevel } from "@/lib/progress"
 import { philippinesSettings, getCurrentSeasonHazards } from "@/lib/regional"
+import { DataPersistenceDebug } from "@/components/data-persistence-debug"
 
 export function Dashboard() {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([])
@@ -482,52 +483,55 @@ export function Dashboard() {
         </Card>
       )}
 
-      {/* Next Milestone */}
-      {getNextMilestone(preparednessLevel) && (
-        <Card className="relative overflow-hidden bg-white/80 backdrop-blur-sm border-0 shadow-xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5"></div>
-          <CardHeader className="relative z-10 pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-xl">🎯</span>
-              </div>
-              <div>
-                <CardTitle className="text-xl font-bold text-slate-800">Next Milestone</CardTitle>
-                <CardDescription className="text-slate-600">Your next preparedness goal</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="relative z-10">
-            <div className="space-y-3">
-              {(() => {
-                const nextMilestone = getNextMilestone(preparednessLevel);
-                if (!nextMilestone) return null;
-                
-                return (
-                  <div className="group relative overflow-hidden rounded-xl border-0 p-4 transition-all duration-200 hover:scale-105 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-md">
-                        <span className="text-lg">🎯</span>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-slate-800 mb-1">{nextMilestone.title}</h4>
-                        <p className="text-sm text-slate-600 mb-2">{nextMilestone.description}</p>
-                        <div className="flex items-center gap-2">
-                          <Progress value={preparednessLevel[nextMilestone.category]} className="flex-1 h-2" />
-                          <span className="text-xs text-slate-500">
-                            {Math.round(preparednessLevel[nextMilestone.category])}%
-                          </span>
+          {/* Next Milestone */}
+          {getNextMilestone(preparednessLevel) && (
+            <Card className="relative overflow-hidden bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5"></div>
+              <CardHeader className="relative z-10 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="text-xl">🎯</span>
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-slate-800">Next Milestone</CardTitle>
+                    <CardDescription className="text-slate-600">Your next preparedness goal</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <div className="space-y-3">
+                  {(() => {
+                    const nextMilestone = getNextMilestone(preparednessLevel);
+                    if (!nextMilestone) return null;
+                    
+                    return (
+                      <div className="group relative overflow-hidden rounded-xl border-0 p-4 transition-all duration-200 hover:scale-105 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-md">
+                            <span className="text-lg">🎯</span>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-slate-800 mb-1">{nextMilestone.title}</h4>
+                            <p className="text-sm text-slate-600 mb-2">{nextMilestone.description}</p>
+                            <div className="flex items-center gap-2">
+                              <Progress value={preparednessLevel[nextMilestone.category]} className="flex-1 h-2" />
+                              <span className="text-xs text-slate-500">
+                                {Math.round(preparednessLevel[nextMilestone.category])}%
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-          </CardContent>
-          <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-500/5 rounded-full blur-xl"></div>
-        </Card>
-      )}
-    </div>
-  )
-}
+                    );
+                  })()}
+                </div>
+              </CardContent>
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-500/5 rounded-full blur-xl"></div>
+            </Card>
+          )}
+
+          {/* Data Persistence Debug */}
+          <DataPersistenceDebug />
+        </div>
+      )
+    }
