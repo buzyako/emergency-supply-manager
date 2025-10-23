@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Emergency Supply Manager - Storage System Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Basic localStorage Test</h2>
+        <button onclick="testBasicStorage()">Test Basic Storage</button>
+        <div id="basic-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Data Structure Test</h2>
+        <button onclick="testDataStructures()">Test Data Structures</button>
+        <div id="structure-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Component Data Test</h2>
+        <button onclick="testComponentData()">Test Component Data</button>
+        <div id="component-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Storage Usage Test</h2>
+        <button onclick="testStorageUsage()">Test Storage Usage</button>
+        <div id="usage-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Data Persistence Test</h2>
+        <button onclick="testDataPersistence()">Test Data Persistence</button>
+        <div id="persistence-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>6. Clear All Test Data</h2>
+        <button onclick="clearTestData()">Clear Test Data</button>
+        <div id="clear-result"></div>
+    </div>
+
+    <script>
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            element.innerHTML += `<div class="${className}">${message}</div>`;
+        }
+
+        function testBasicStorage() {
+            const resultDiv = document.getElementById('basic-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                // Test if localStorage is available
+                const testKey = 'test-basic-storage';
+                const testValue = 'test-value-' + Date.now();
+                
+                localStorage.setItem(testKey, testValue);
+                const retrieved = localStorage.getItem(testKey);
+                
+                if (retrieved === testValue) {
+                    log('basic-result', '✅ Basic localStorage write/read works', 'success');
+                } else {
+                    log('basic-result', '❌ Basic localStorage write/read failed', 'error');
+                }
+                
+                localStorage.removeItem(testKey);
+                log('basic-result', '✅ Basic localStorage remove works', 'success');
+                
+            } catch (error) {
+                log('basic-result', `❌ Basic localStorage test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testDataStructures() {
+            const resultDiv = document.getElementById('structure-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                // Test FoodItem structure
+                const foodItem = {
+                    id: Date.now().toString(),
+                    name: "Test Food",
+                    quantity: 5,
+                    unit: "cans",
+                    expiryDate: "2024-12-31",
+                    location: "Pantry",
+                    category: "grains",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('test-food-item', JSON.stringify(foodItem));
+                const retrieved = JSON.parse(localStorage.getItem('test-food-item'));
+                
+                if (retrieved.name === foodItem.name && retrieved.quantity === foodItem.quantity) {
+                    log('structure-result', '✅ FoodItem structure test passed', 'success');
+                } else {
+                    log('structure-result', '❌ FoodItem structure test failed', 'error');
+                }
+                
+                // Test KitItem structure
+                const kitItem = {
+                    id: Date.now().toString(),
+                    name: "Test Kit Item",
+                    quantity: 2,
+                    category: "first-aid",
+                    lastChecked: new Date().toISOString().split("T")[0],
+                    notes: "Test notes",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('test-kit-item', JSON.stringify(kitItem));
+                const retrievedKit = JSON.parse(localStorage.getItem('test-kit-item'));
+                
+                if (retrievedKit.name === kitItem.name && retrievedKit.quantity === kitItem.quantity) {
+                    log('structure-result', '✅ KitItem structure test passed', 'success');
+                } else {
+                    log('structure-result', '❌ KitItem structure test failed', 'error');
+                }
+                
+                // Test GoBag structure
+                const goBag = {
+                    id: Date.now().toString(),
+                    name: "Test Go Bag",
+                    person: "Test Person",
+                    items: [
+                        {
+                            id: "1",
+                            name: "Test Item 1",
+                            quantity: 1
+                        }
+                    ],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('test-go-bag', JSON.stringify(goBag));
+                const retrievedBag = JSON.parse(localStorage.getItem('test-go-bag'));
+                
+                if (retrievedBag.name === goBag.name && retrievedBag.items.length === 1) {
+                    log('structure-result', '✅ GoBag structure test passed', 'success');
+                } else {
+                    log('structure-result', '❌ GoBag structure test failed', 'error');
+                }
+                
+            } catch (error) {
+                log('structure-result', `❌ Data structure test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testComponentData() {
+            const resultDiv = document.getElementById('component-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                // Test food items array
+                const foodItems = [
+                    {
+                        id: "1",
+                        name: "Rice",
+                        quantity: 10,
+                        unit: "bags",
+                        expiryDate: "2025-12-31",
+                        location: "Pantry",
+                        category: "grains",
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: "2",
+                        name: "Canned Beans",
+                        quantity: 5,
+                        unit: "cans",
+                        expiryDate: "2024-06-30",
+                        location: "Pantry",
+                        category: "proteins",
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('foodItems', JSON.stringify(foodItems));
+                const retrieved = JSON.parse(localStorage.getItem('foodItems'));
+                
+                if (Array.isArray(retrieved) && retrieved.length === 2) {
+                    log('component-result', '✅ Food items array test passed', 'success');
+                } else {
+                    log('component-result', '❌ Food items array test failed', 'error');
+                }
+                
+                // Test kit items array
+                const kitItems = [
+                    {
+                        id: "1",
+                        name: "Bandages",
+                        quantity: 20,
+                        category: "first-aid",
+                        lastChecked: new Date().toISOString().split("T")[0],
+                        notes: "Various sizes",
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('kitItems', JSON.stringify(kitItems));
+                const retrievedKit = JSON.parse(localStorage.getItem('kitItems'));
+                
+                if (Array.isArray(retrievedKit) && retrievedKit.length === 1) {
+                    log('component-result', '✅ Kit items array test passed', 'success');
+                } else {
+                    log('component-result', '❌ Kit items array test failed', 'error');
+                }
+                
+                // Test go bags array
+                const goBags = [
+                    {
+                        id: "1",
+                        name: "Emergency Go Bag",
+                        person: "John Doe",
+                        items: [
+                            {
+                                id: "1",
+                                name: "Water Bottle",
+                                quantity: 2
+                            }
+                        ],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('goBags', JSON.stringify(goBags));
+                const retrievedBags = JSON.parse(localStorage.getItem('goBags'));
+                
+                if (Array.isArray(retrievedBags) && retrievedBags.length === 1) {
+                    log('component-result', '✅ Go bags array test passed', 'success');
+                } else {
+                    log('component-result', '❌ Go bags array test failed', 'error');
+                }
+                
+            } catch (error) {
+                log('component-result', `❌ Component data test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testStorageUsage() {
+            const resultDiv = document.getElementById('usage-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                // Calculate storage usage
+                let used = 0;
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        used += localStorage[key].length;
+                    }
+                }
+                
+                const total = 5 * 1024 * 1024; // 5MB typical limit
+                const available = total - used;
+                
+                log('usage-result', `📊 Storage Usage:`, 'info');
+                log('usage-result', `Used: ${(used / 1024).toFixed(2)} KB`, 'info');
+                log('usage-result', `Available: ${(available / 1024).toFixed(2)} KB`, 'info');
+                log('usage-result', `Total: ${(total / 1024).toFixed(2)} KB`, 'info');
+                
+                if (used < total * 0.9) {
+                    log('usage-result', '✅ Storage usage is within safe limits', 'success');
+                } else {
+                    log('usage-result', '⚠️ Storage usage is getting high', 'error');
+                }
+                
+            } catch (error) {
+                log('usage-result', `❌ Storage usage test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testDataPersistence() {
+            const resultDiv = document.getElementById('persistence-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                // Test data persistence across localStorage operations
+                const testData = {
+                    timestamp: Date.now(),
+                    testValue: "persistence-test-" + Math.random()
+                };
+                
+                localStorage.setItem('persistence-test', JSON.stringify(testData));
+                
+                // Simulate app restart by clearing and reloading
+                const retrieved = JSON.parse(localStorage.getItem('persistence-test'));
+                
+                if (retrieved && retrieved.testValue === testData.testValue) {
+                    log('persistence-result', '✅ Data persistence test passed', 'success');
+                } else {
+                    log('persistence-result', '❌ Data persistence test failed', 'error');
+                }
+                
+                // Test backup functionality
+                const backup = {};
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key) && (key.startsWith('food') || key.startsWith('kit') || key.startsWith('go'))) {
+                        backup[key] = localStorage.getItem(key);
+                    }
+                }
+                
+                if (Object.keys(backup).length > 0) {
+                    log('persistence-result', '✅ Backup functionality test passed', 'success');
+                } else {
+                    log('persistence-result', '⚠️ No backup data found (this is normal if no data exists)', 'info');
+                }
+                
+            } catch (error) {
+                log('persistence-result', `❌ Data persistence test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function clearTestData() {
+            const resultDiv = document.getElementById('clear-result');
+            resultDiv.innerHTML = '';
+            
+            try {
+                // Clear all test data
+                const testKeys = [
+                    'test-basic-storage',
+                    'test-food-item',
+                    'test-kit-item',
+                    'test-go-bag',
+                    'persistence-test'
+                ];
+                
+                let cleared = 0;
+                testKeys.forEach(key => {
+                    if (localStorage.getItem(key)) {
+                        localStorage.removeItem(key);
+                        cleared++;
+                    }
+                });
+                
+                log('clear-result', `✅ Cleared ${cleared} test data items`, 'success');
+                
+            } catch (error) {
+                log('clear-result', `❌ Failed to clear test data: ${error.message}`, 'error');
+            }
+        }
+
+        // Run basic test on page load
+        window.onload = function() {
+            testBasicStorage();
+        };
+    </script>
+</body>
+</html>

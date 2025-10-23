@@ -123,7 +123,7 @@ export class StorageManager {
     try {
       const backup: Record<string, any> = {};
       for (let key in localStorage) {
-        if (localStorage.hasOwnProperty(key) && key.startsWith('food') || key.startsWith('kit') || key.startsWith('go')) {
+        if (localStorage.hasOwnProperty(key) && (key.startsWith('food') || key.startsWith('kit') || key.startsWith('go'))) {
           backup[key] = localStorage.getItem(key);
         }
       }
