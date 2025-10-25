@@ -60,9 +60,25 @@ export function Dashboard() {
 
     // Calculate preparedness levels
     const foodLevel = Math.min((food.length / 10) * 100, 100) // Assume 10 items = 100%
-    const waterLevel = localStorage.getItem("waterStored") ? parseInt(localStorage.getItem("waterStored")!) : 0
-    const financialLevel = localStorage.getItem("emergencyFund") ? parseInt(localStorage.getItem("emergencyFund")!) : 0
-    const communicationLevel = localStorage.getItem("communicationPlan") ? 100 : 0
+    
+    // Load water storage data
+    const waterData = JSON.parse(localStorage.getItem("waterStorage") || "{}")
+    const waterLevel = waterData.familySize > 0 && waterData.targetStorage > 0 
+      ? Math.min((waterData.currentStorage / waterData.targetStorage) * 100, 100) 
+      : 0
+    
+    // Load financial data
+    const financialData = JSON.parse(localStorage.getItem("financialData") || "{}")
+    const financialLevel = financialData.monthlyExpenses > 0 && financialData.target3Month > 0
+      ? Math.min((financialData.currentEmergencyFund / financialData.target3Month) * 100, 100)
+      : 0
+    
+    // Load communication plan data
+    const communicationData = JSON.parse(localStorage.getItem("communicationPlan") || "{}")
+    const communicationLevel = communicationData.familyName && communicationData.primaryContact && communicationData.contacts?.length > 0
+      ? 100
+      : 0
+    
     const spiritualLevel = localStorage.getItem("spiritualPreparedness") ? parseInt(localStorage.getItem("spiritualPreparedness")!) : 0
     const emergencyKitLevel = Math.min((kit.length / 15) * 100, 100) // Assume 15 items = 100%
     const goBagsLevel = Math.min((bags.length / 4) * 100, 100) // Assume 4 bags = 100%

@@ -6,20 +6,23 @@ import { FoodStorageTracker } from "@/components/food-storage-tracker"
 import { EmergencyKitManager } from "@/components/emergency-kit-manager"
 import { EmergencyKitCheck } from "@/components/emergency-kit-check"
 import { GoBagManager } from "@/components/go-bag-manager"
+import { WaterStorageCalculator } from "@/components/water-storage-calculator"
+import { FinancialPreparedness } from "@/components/financial-preparedness"
+import { CommunicationPlan } from "@/components/communication-plan"
 import { Button } from "@/components/ui/button"
 import { NotificationsSettings } from "@/components/notifications-settings"
 import { AnalyticsDashboard } from "@/components/analytics-dashboard"
 import { PWAInstaller } from "@/components/pwa-installer"
 import { SwipeGesture, useMobileDetection, PullToRefresh } from "@/components/mobile-gestures"
 
-type Page = "dashboard" | "food" | "kit" | "kitcheck" | "gobag" | "notifications" | "analytics"
+type Page = "dashboard" | "food" | "kit" | "kitcheck" | "gobag" | "water" | "financial" | "communication" | "notifications" | "analytics"
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<Page>("dashboard")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { isMobile, isTablet } = useMobileDetection()
 
-  const pages: Page[] = ["dashboard", "food", "kit", "kitcheck", "gobag", "analytics", "notifications"]
+  const pages: Page[] = ["dashboard", "food", "kit", "kitcheck", "gobag", "water", "financial", "communication", "analytics", "notifications"]
   const currentIndex = pages.indexOf(currentPage)
 
   const handleSwipeLeft = () => {
@@ -49,7 +52,11 @@ export default function Home() {
       {/* Header */}
       <header className="sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-slate-200 shadow-lg">
         <div className="flex items-center justify-between px-4 py-4 md:py-6">
-          <div className="flex items-center gap-3 md:gap-4">
+          <button 
+            onClick={() => setCurrentPage("dashboard")}
+            className="flex items-center gap-3 md:gap-4 hover:opacity-80 transition-opacity duration-200 active:scale-95"
+            aria-label="Go to Dashboard"
+          >
             <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg">
               <span className="text-xl md:text-2xl">🛡️</span>
             </div>
@@ -57,7 +64,7 @@ export default function Home() {
               <h1 className="text-xl md:text-2xl font-bold text-slate-800">Emergency Supply Manager</h1>
               <p className="text-xs md:text-sm text-slate-600 hidden md:block">Emergency Preparedness System</p>
             </div>
-          </div>
+          </button>
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
             className="md:hidden p-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all duration-200 active:scale-95"
@@ -140,6 +147,45 @@ export default function Home() {
                 <div className="flex items-center gap-3">
                   <span className="text-lg">🎒</span>
                   <span>Go Bags</span>
+                </div>
+              </Button>
+              <Button
+                variant={currentPage === "water" ? "default" : "ghost"}
+                onClick={() => {
+                  setCurrentPage("water")
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full justify-start text-sm py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">💧</span>
+                  <span>Water Storage</span>
+                </div>
+              </Button>
+              <Button
+                variant={currentPage === "financial" ? "default" : "ghost"}
+                onClick={() => {
+                  setCurrentPage("financial")
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full justify-start text-sm py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">💰</span>
+                  <span>Financial</span>
+                </div>
+              </Button>
+              <Button
+                variant={currentPage === "communication" ? "default" : "ghost"}
+                onClick={() => {
+                  setCurrentPage("communication")
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full justify-start text-sm py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">📞</span>
+                  <span>Communication</span>
                 </div>
               </Button>
               <Button
@@ -248,6 +294,45 @@ export default function Home() {
               </div>
             </Button>
             <Button
+              variant={currentPage === "water" ? "default" : "ghost"}
+              onClick={() => setCurrentPage("water")}
+              className={`w-full justify-start text-base py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 group ${currentPage === "water" ? "" : "hover:bg-slate-100"}`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl group-hover:scale-110 transition-transform duration-200">💧</span>
+                <div className="text-left">
+                  <div className={`font-medium ${currentPage === "water" ? "text-white" : "text-slate-800 group-hover:text-slate-900"}`}>Water Storage</div>
+                  <div className={`text-xs ${currentPage === "water" ? "text-blue-100" : "text-slate-500 group-hover:text-slate-700"}`}>Storage Calculator</div>
+                </div>
+              </div>
+            </Button>
+            <Button
+              variant={currentPage === "financial" ? "default" : "ghost"}
+              onClick={() => setCurrentPage("financial")}
+              className={`w-full justify-start text-base py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 group ${currentPage === "financial" ? "" : "hover:bg-slate-100"}`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl group-hover:scale-110 transition-transform duration-200">💰</span>
+                <div className="text-left">
+                  <div className={`font-medium ${currentPage === "financial" ? "text-white" : "text-slate-800 group-hover:text-slate-900"}`}>Financial</div>
+                  <div className={`text-xs ${currentPage === "financial" ? "text-blue-100" : "text-slate-500 group-hover:text-slate-700"}`}>Emergency Fund</div>
+                </div>
+              </div>
+            </Button>
+            <Button
+              variant={currentPage === "communication" ? "default" : "ghost"}
+              onClick={() => setCurrentPage("communication")}
+              className={`w-full justify-start text-base py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 group ${currentPage === "communication" ? "" : "hover:bg-slate-100"}`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl group-hover:scale-110 transition-transform duration-200">📞</span>
+                <div className="text-left">
+                  <div className={`font-medium ${currentPage === "communication" ? "text-white" : "text-slate-800 group-hover:text-slate-900"}`}>Communication</div>
+                  <div className={`text-xs ${currentPage === "communication" ? "text-blue-100" : "text-slate-500 group-hover:text-slate-700"}`}>Family Plan</div>
+                </div>
+              </div>
+            </Button>
+            <Button
               variant={currentPage === "analytics" ? "default" : "ghost"}
               onClick={() => setCurrentPage("analytics")}
               className={`w-full justify-start text-base py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 group ${currentPage === "analytics" ? "" : "hover:bg-slate-100"}`}
@@ -290,6 +375,9 @@ export default function Home() {
                 {currentPage === "kit" && <EmergencyKitManager />}
                 {currentPage === "kitcheck" && <EmergencyKitCheck />}
                 {currentPage === "gobag" && <GoBagManager />}
+                {currentPage === "water" && <WaterStorageCalculator />}
+                {currentPage === "financial" && <FinancialPreparedness />}
+                {currentPage === "communication" && <CommunicationPlan />}
                 {currentPage === "analytics" && <AnalyticsDashboard />}
                 {currentPage === "notifications" && <NotificationsSettings />}
               </div>
