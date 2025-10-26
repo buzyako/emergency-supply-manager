@@ -17,16 +17,7 @@ export interface KitItem {
   category: "first-aid" | "water" | "tools" | "documents" | "clothing" | "other"
   lastChecked: string
   notes: string
-  includedItems: string[]
-  // Monitoring fields
-  hasExpiration: boolean
-  expirationDate?: string
-  needsMaintenance: boolean
-  maintenanceInterval?: number // in days
-  lastMaintenance?: string
-  hasBattery: boolean
-  batteryType?: string
-  lastBatteryCheck?: string
+  includedItems: GoBagItem[] // Array of GoBagItem objects with individual monitoring
   createdAt: string
   updatedAt: string
 }
@@ -35,6 +26,17 @@ export interface GoBagItem {
   id: string
   name: string
   quantity: number
+  // Individual item monitoring
+  hasExpiration: boolean
+  expirationDate?: string
+  noExpiry: boolean // For items that explicitly have no expiration
+  needsMaintenance: boolean
+  maintenanceInterval?: number // in days
+  lastMaintenance?: string
+  hasBattery: boolean
+  batteryType?: string
+  lastBatteryCheck?: string
+  notes?: string
 }
 
 export interface GoBag {

@@ -68,9 +68,19 @@ export function GoBagManager() {
     // Convert quantity to number, default to 1 if empty or invalid
     const quantity = newItem.quantity === "" ? 1 : parseInt(newItem.quantity) || 1
     
+    const newGoBagItem: GoBagItem = {
+      id: Date.now().toString(),
+      name: newItem.name,
+      quantity,
+      hasExpiration: false,
+      noExpiry: false,
+      needsMaintenance: false,
+      hasBattery: false,
+    }
+    
     setFormData({
       ...formData,
-      items: [...formData.items, { id: Date.now().toString(), ...newItem, quantity }],
+      items: [...formData.items, newGoBagItem],
     })
     setNewItem({ name: "", quantity: "" })
   }
