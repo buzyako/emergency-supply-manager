@@ -17,13 +17,16 @@ export function EmergencyKitManager() {
     category: string
     lastChecked: string
     notes: string
+    includedItems: string[]
   }>({
     name: "",
     quantity: "",
     category: "first-aid",
     lastChecked: new Date().toISOString().split("T")[0],
     notes: "",
+    includedItems: [],
   })
+  const [newItem, setNewItem] = useState("")
 
   useEffect(() => {
     const saved = storage.load<KitItem>("kitItems")
@@ -75,8 +78,26 @@ export function EmergencyKitManager() {
       category: "first-aid",
       lastChecked: new Date().toISOString().split("T")[0],
       notes: "",
+      includedItems: [],
     })
     setShowForm(false)
+  }
+
+  const handleAddIncludedItem = () => {
+    if (newItem.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        includedItems: [...prev.includedItems, newItem.trim()]
+      }))
+      setNewItem("")
+    }
+  }
+
+  const handleRemoveIncludedItem = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      includedItems: prev.includedItems.filter((_, i) => i !== index)
+    }))
   }
 
   const handleEdit = (item: KitItem) => {
@@ -86,6 +107,7 @@ export function EmergencyKitManager() {
       category: item.category,
       lastChecked: item.lastChecked,
       notes: item.notes,
+      includedItems: item.includedItems || [],
     })
     setEditingId(item.id)
     setShowForm(true)
@@ -155,6 +177,7 @@ export function EmergencyKitManager() {
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full rounded-md border border-input bg-background px-3 py-2"
+                  aria-label="Category selection"
                 >
                   {categories.map((cat) => (
                     <option key={cat.value} value={cat.value}>
@@ -191,6 +214,44 @@ export function EmergencyKitManager() {
                   rows={3}
                 />
               </div>
+              <div className="md:col-span-2">
+                <label className="text-sm font-medium">Included Items</label>
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      value={newItem}
+                      onChange={(e) => setNewItem(e.target.value)}
+                      placeholder="Add an item included in this kit..."
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddIncludedItem()}
+                    />
+                    <Button onClick={handleAddIncludedItem} type="button" variant="outline">
+                      Add
+                    </Button>
+                  </div>
+                  {formData.includedItems.length > 0 && (
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Items included in this kit:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {formData.includedItems.map((item, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded-md"
+                          >
+                            {item}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveIncludedItem(index)}
+                              className="ml-1 text-blue-600 hover:text-blue-800"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="flex gap-2">
               <Button onClick={handleAddItem}>{editingId ? "Update" : "Add"} Item</Button>
@@ -205,6 +266,7 @@ export function EmergencyKitManager() {
                     category: "first-aid",
                     lastChecked: new Date().toISOString().split("T")[0],
                     notes: "",
+                    includedItems: [],
                   })
                 }}
               >
@@ -240,6 +302,21 @@ export function EmergencyKitManager() {
                             Qty: {item.quantity} • Last checked: {new Date(item.lastChecked).toLocaleDateString()}
                           </p>
                           {item.notes && <p className="mt-1 text-xs text-muted-foreground">{item.notes}</p>}
+                          {item.includedItems && item.includedItems.length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs text-muted-foreground mb-1">Included items:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {item.includedItems.map((includedItem, index) => (
+                                  <span
+                                    key={index}
+                                    className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-md"
+                                  >
+                                    {includedItem}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                           {needsCheck && <p className="mt-1 text-xs text-orange-600 font-medium">Needs checking</p>}
                         </div>
                         <div className="flex gap-2">

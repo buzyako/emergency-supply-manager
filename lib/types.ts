@@ -17,6 +17,7 @@ export interface KitItem {
   category: "first-aid" | "water" | "tools" | "documents" | "clothing" | "other"
   lastChecked: string
   notes: string
+  includedItems: string[]
   createdAt: string
   updatedAt: string
 }
