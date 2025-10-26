@@ -56,7 +56,14 @@ export function EmergencyKitManager() {
 
     if (editingId) {
       const updated = items.map((item) =>
-        item.id === editingId ? { ...item, ...formData, quantity, category: formData.category as KitItem['category'], updatedAt: new Date().toISOString() } : item,
+        item.id === editingId ? { 
+          ...item, 
+          ...formData, 
+          quantity, 
+          category: formData.category as KitItem['category'], 
+          includedItems: formData.includedItems,
+          updatedAt: new Date().toISOString() 
+        } : item,
       )
       saveItems(updated)
       setEditingId(null)
@@ -80,6 +87,7 @@ export function EmergencyKitManager() {
       notes: "",
       includedItems: [],
     })
+    setNewItem("")
     setShowForm(false)
   }
 
@@ -109,6 +117,7 @@ export function EmergencyKitManager() {
       notes: item.notes,
       includedItems: item.includedItems || [],
     })
+    setNewItem("") // Reset the new item input
     setEditingId(item.id)
     setShowForm(true)
   }
@@ -260,6 +269,7 @@ export function EmergencyKitManager() {
                 onClick={() => {
                   setShowForm(false)
                   setEditingId(null)
+                  setNewItem("")
                   setFormData({
                     name: "",
                     quantity: "",
