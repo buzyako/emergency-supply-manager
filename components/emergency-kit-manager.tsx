@@ -18,6 +18,14 @@ export function EmergencyKitManager() {
     lastChecked: string
     notes: string
     includedItems: string[]
+    hasExpiration: boolean
+    expirationDate: string
+    needsMaintenance: boolean
+    maintenanceInterval: string
+    lastMaintenance: string
+    hasBattery: boolean
+    batteryType: string
+    lastBatteryCheck: string
   }>({
     name: "",
     quantity: "",
@@ -25,6 +33,14 @@ export function EmergencyKitManager() {
     lastChecked: new Date().toISOString().split("T")[0],
     notes: "",
     includedItems: [],
+    hasExpiration: false,
+    expirationDate: "",
+    needsMaintenance: false,
+    maintenanceInterval: "90",
+    lastMaintenance: "",
+    hasBattery: false,
+    batteryType: "",
+    lastBatteryCheck: "",
   })
   const [newItem, setNewItem] = useState("")
 
@@ -62,6 +78,14 @@ export function EmergencyKitManager() {
           quantity, 
           category: formData.category as KitItem['category'], 
           includedItems: formData.includedItems,
+          hasExpiration: formData.hasExpiration,
+          expirationDate: formData.hasExpiration ? formData.expirationDate : undefined,
+          needsMaintenance: formData.needsMaintenance,
+          maintenanceInterval: formData.needsMaintenance ? parseInt(formData.maintenanceInterval) : undefined,
+          lastMaintenance: formData.needsMaintenance ? formData.lastMaintenance : undefined,
+          hasBattery: formData.hasBattery,
+          batteryType: formData.hasBattery ? formData.batteryType : undefined,
+          lastBatteryCheck: formData.hasBattery ? formData.lastBatteryCheck : undefined,
           updatedAt: new Date().toISOString() 
         } : item,
       )
@@ -73,6 +97,14 @@ export function EmergencyKitManager() {
         ...formData,
         quantity,
         category: formData.category as KitItem['category'],
+        hasExpiration: formData.hasExpiration,
+        expirationDate: formData.hasExpiration ? formData.expirationDate : undefined,
+        needsMaintenance: formData.needsMaintenance,
+        maintenanceInterval: formData.needsMaintenance ? parseInt(formData.maintenanceInterval) : undefined,
+        lastMaintenance: formData.needsMaintenance ? formData.lastMaintenance : undefined,
+        hasBattery: formData.hasBattery,
+        batteryType: formData.hasBattery ? formData.batteryType : undefined,
+        lastBatteryCheck: formData.hasBattery ? formData.lastBatteryCheck : undefined,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
@@ -86,6 +118,14 @@ export function EmergencyKitManager() {
       lastChecked: new Date().toISOString().split("T")[0],
       notes: "",
       includedItems: [],
+      hasExpiration: false,
+      expirationDate: "",
+      needsMaintenance: false,
+      maintenanceInterval: "90",
+      lastMaintenance: "",
+      hasBattery: false,
+      batteryType: "",
+      lastBatteryCheck: "",
     })
     setNewItem("")
     setShowForm(false)
@@ -116,6 +156,14 @@ export function EmergencyKitManager() {
       lastChecked: item.lastChecked,
       notes: item.notes,
       includedItems: item.includedItems || [],
+      hasExpiration: item.hasExpiration || false,
+      expirationDate: item.expirationDate || "",
+      needsMaintenance: item.needsMaintenance || false,
+      maintenanceInterval: item.maintenanceInterval?.toString() || "90",
+      lastMaintenance: item.lastMaintenance || "",
+      hasBattery: item.hasBattery || false,
+      batteryType: item.batteryType || "",
+      lastBatteryCheck: item.lastBatteryCheck || "",
     })
     setNewItem("") // Reset the new item input
     setEditingId(item.id)
@@ -261,6 +309,103 @@ export function EmergencyKitManager() {
                   )}
                 </div>
               </div>
+              
+              {/* Monitoring Section */}
+              <div className="md:col-span-2">
+                <h3 className="text-lg font-semibold mb-4">📅 Monitoring & Maintenance</h3>
+                <div className="grid gap-4 md:grid-cols-3">
+                  {/* Expiration Monitoring */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="hasExpiration"
+                        checked={formData.hasExpiration}
+                        onChange={(e) => setFormData(prev => ({ ...prev, hasExpiration: e.target.checked }))}
+                      />
+                      <label htmlFor="hasExpiration" className="text-sm font-medium">Has Expiration Date</label>
+                    </div>
+                    {formData.hasExpiration && (
+                      <div>
+                        <label className="text-sm text-muted-foreground">Expiration Date</label>
+                        <Input
+                          type="date"
+                          value={formData.expirationDate}
+                          onChange={(e) => setFormData(prev => ({ ...prev, expirationDate: e.target.value }))}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Maintenance Monitoring */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="needsMaintenance"
+                        checked={formData.needsMaintenance}
+                        onChange={(e) => setFormData(prev => ({ ...prev, needsMaintenance: e.target.checked }))}
+                      />
+                      <label htmlFor="needsMaintenance" className="text-sm font-medium">Needs Maintenance</label>
+                    </div>
+                    {formData.needsMaintenance && (
+                      <div className="space-y-2">
+                        <div>
+                          <label className="text-sm text-muted-foreground">Maintenance Interval (days)</label>
+                          <Input
+                            type="number"
+                            min="1"
+                            value={formData.maintenanceInterval}
+                            onChange={(e) => setFormData(prev => ({ ...prev, maintenanceInterval: e.target.value }))}
+                            placeholder="90"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm text-muted-foreground">Last Maintenance</label>
+                          <Input
+                            type="date"
+                            value={formData.lastMaintenance}
+                            onChange={(e) => setFormData(prev => ({ ...prev, lastMaintenance: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Battery Monitoring */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="hasBattery"
+                        checked={formData.hasBattery}
+                        onChange={(e) => setFormData(prev => ({ ...prev, hasBattery: e.target.checked }))}
+                      />
+                      <label htmlFor="hasBattery" className="text-sm font-medium">Has Battery</label>
+                    </div>
+                    {formData.hasBattery && (
+                      <div className="space-y-2">
+                        <div>
+                          <label className="text-sm text-muted-foreground">Battery Type</label>
+                          <Input
+                            value={formData.batteryType}
+                            onChange={(e) => setFormData(prev => ({ ...prev, batteryType: e.target.value }))}
+                            placeholder="e.g., AA, AAA, 9V"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm text-muted-foreground">Last Battery Check</label>
+                          <Input
+                            type="date"
+                            value={formData.lastBatteryCheck}
+                            onChange={(e) => setFormData(prev => ({ ...prev, lastBatteryCheck: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="flex gap-2">
               <Button onClick={handleAddItem}>{editingId ? "Update" : "Add"} Item</Button>
@@ -277,6 +422,14 @@ export function EmergencyKitManager() {
                     lastChecked: new Date().toISOString().split("T")[0],
                     notes: "",
                     includedItems: [],
+                    hasExpiration: false,
+                    expirationDate: "",
+                    needsMaintenance: false,
+                    maintenanceInterval: "90",
+                    lastMaintenance: "",
+                    hasBattery: false,
+                    batteryType: "",
+                    lastBatteryCheck: "",
                   })
                 }}
               >
@@ -327,6 +480,55 @@ export function EmergencyKitManager() {
                               </div>
                             </div>
                           )}
+                          
+                          {/* Monitoring Status Indicators */}
+                          <div className="mt-2 space-y-1">
+                            {/* Expiration Status */}
+                            {item.hasExpiration && item.expirationDate && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-muted-foreground">Expires:</span>
+                                <span className={`text-xs font-medium ${
+                                  new Date(item.expirationDate) < new Date() 
+                                    ? 'text-red-600' 
+                                    : new Date(item.expirationDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                                    ? 'text-orange-600'
+                                    : 'text-green-600'
+                                }`}>
+                                  {new Date(item.expirationDate).toLocaleDateString()}
+                                </span>
+                              </div>
+                            )}
+                            
+                            {/* Maintenance Status */}
+                            {item.needsMaintenance && item.maintenanceInterval && item.lastMaintenance && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-muted-foreground">Maintenance:</span>
+                                <span className={`text-xs font-medium ${
+                                  new Date(item.lastMaintenance) < new Date(Date.now() - item.maintenanceInterval * 24 * 60 * 60 * 1000)
+                                    ? 'text-red-600'
+                                    : new Date(item.lastMaintenance) < new Date(Date.now() - (item.maintenanceInterval - 7) * 24 * 60 * 60 * 1000)
+                                    ? 'text-orange-600'
+                                    : 'text-green-600'
+                                }`}>
+                                  {new Date(item.lastMaintenance).toLocaleDateString()}
+                                </span>
+                              </div>
+                            )}
+                            
+                            {/* Battery Status */}
+                            {item.hasBattery && item.batteryType && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-muted-foreground">Battery:</span>
+                                <span className="text-xs font-medium text-blue-600">{item.batteryType}</span>
+                                {item.lastBatteryCheck && (
+                                  <span className="text-xs text-muted-foreground">
+                                    (checked: {new Date(item.lastBatteryCheck).toLocaleDateString()})
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          
                           {needsCheck && <p className="mt-1 text-xs text-orange-600 font-medium">Needs checking</p>}
                         </div>
                         <div className="flex gap-2">

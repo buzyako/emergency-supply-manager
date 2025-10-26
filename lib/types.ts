@@ -18,6 +18,15 @@ export interface KitItem {
   lastChecked: string
   notes: string
   includedItems: string[]
+  // Monitoring fields
+  hasExpiration: boolean
+  expirationDate?: string
+  needsMaintenance: boolean
+  maintenanceInterval?: number // in days
+  lastMaintenance?: string
+  hasBattery: boolean
+  batteryType?: string
+  lastBatteryCheck?: string
   createdAt: string
   updatedAt: string
 }
