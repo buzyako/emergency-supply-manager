@@ -8,13 +8,12 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { storage } from "@/lib/storage"
+import { storage, StorageObject } from "@/lib/storage"
 
-interface WaterStorageData {
+interface WaterStorageData extends StorageObject {
   familySize: number
   currentStorage: number // in gallons
   targetStorage: number // in gallons
-  lastUpdated: string
   storageLocations: string[]
   notes: string
 }

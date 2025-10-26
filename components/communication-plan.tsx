@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
-import { storage } from "@/lib/storage"
+import { storage, StorageObject } from "@/lib/storage"
 
 interface Contact {
   id: string
@@ -29,7 +29,7 @@ interface MeetingPoint {
   isPrimary: boolean
 }
 
-interface CommunicationPlan {
+interface CommunicationPlan extends StorageObject {
   familyName: string
   primaryContact: string
   outOfAreaContact: string
@@ -37,7 +37,6 @@ interface CommunicationPlan {
   contacts: Contact[]
   meetingPoints: MeetingPoint[]
   communicationMethods: string[]
-  lastUpdated: string
   notes: string
 }
 

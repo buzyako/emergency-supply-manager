@@ -9,15 +9,14 @@ import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
-import { storage } from "@/lib/storage"
+import { storage, StorageObject } from "@/lib/storage"
 
-interface FinancialData {
+interface FinancialData extends StorageObject {
   monthlyExpenses: number
   currentEmergencyFund: number
   target3Month: number
   target6Month: number
   target12Month: number
-  lastUpdated: string
   financialGoals: {
     id: string
     name: string

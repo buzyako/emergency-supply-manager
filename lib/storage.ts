@@ -5,6 +5,11 @@ export interface StorageItem {
   updatedAt: string;
 }
 
+// For single object storage (not arrays)
+export interface StorageObject {
+  lastUpdated: string;
+}
+
 export class StorageManager {
   private static instance: StorageManager;
   private debugMode = true;
@@ -40,7 +45,9 @@ export class StorageManager {
   }
 
   // Save data to localStorage with error handling
-  save<T extends StorageItem>(key: string, data: T[]): boolean {
+  save<T extends StorageItem>(key: string, data: T[]): boolean;
+  save<T extends StorageObject>(key: string, data: T): boolean;
+  save<T extends StorageItem | StorageObject>(key: string, data: T[] | T): boolean {
     try {
       if (!this.isLocalStorageAvailable()) {
         this.error('localStorage not available, cannot save data');
@@ -49,7 +56,12 @@ export class StorageManager {
 
       const serialized = JSON.stringify(data);
       localStorage.setItem(key, serialized);
-      this.log(`Saved ${data.length} items to ${key}`, { key, count: data.length });
+      
+      if (Array.isArray(data)) {
+        this.log(`Saved ${data.length} items to ${key}`, { key, count: data.length });
+      } else {
+        this.log(`Saved object to ${key}`, { key });
+      }
       return true;
     } catch (error) {
       this.error(`Failed to save data to ${key}`, error);
@@ -58,10 +70,12 @@ export class StorageManager {
   }
 
   // Load data from localStorage with error handling
-  load<T extends StorageItem>(key: string): T[] {
+  load<T extends StorageItem>(key: string): T[];
+  load<T extends StorageObject>(key: string): T | null;
+  load<T extends StorageItem | StorageObject>(key: string): T[] | T | null {
     try {
       if (!this.isLocalStorageAvailable()) {
-        this.error('localStorage not available, returning empty array');
+        this.error('localStorage not available, returning empty data');
         return [];
       }
 
@@ -72,8 +86,14 @@ export class StorageManager {
       }
 
       const data = JSON.parse(serialized);
-      this.log(`Loaded ${data.length} items from ${key}`, { key, count: data.length });
-      return Array.isArray(data) ? data : [];
+      
+      if (Array.isArray(data)) {
+        this.log(`Loaded ${data.length} items from ${key}`, { key, count: data.length });
+        return data;
+      } else {
+        this.log(`Loaded object from ${key}`, { key });
+        return data;
+      }
     } catch (error) {
       this.error(`Failed to load data from ${key}`, error);
       return [];
