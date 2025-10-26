@@ -71,7 +71,7 @@ export function CommunicationPlan() {
   })
 
   useEffect(() => {
-    const saved = storage.load<CommunicationPlan>("communicationPlan")
+    const saved = storage.loadObject<CommunicationPlan>("communicationPlan")
     if (saved) {
       setData(saved)
     } else {

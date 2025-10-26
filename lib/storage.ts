@@ -69,13 +69,11 @@ export class StorageManager {
     }
   }
 
-  // Load data from localStorage with error handling
-  load<T extends StorageItem>(key: string): T[];
-  load<T extends StorageObject>(key: string): T | null;
-  load<T extends StorageItem | StorageObject>(key: string): T[] | T | null {
+  // Load array data from localStorage
+  loadArray<T extends StorageItem>(key: string): T[] {
     try {
       if (!this.isLocalStorageAvailable()) {
-        this.error('localStorage not available, returning empty data');
+        this.error('localStorage not available, returning empty array');
         return [];
       }
 
@@ -91,12 +89,54 @@ export class StorageManager {
         this.log(`Loaded ${data.length} items from ${key}`, { key, count: data.length });
         return data;
       } else {
+        this.error(`Expected array data for key ${key}, but got object`);
+        return [];
+      }
+    } catch (error) {
+      this.error(`Failed to load array data from ${key}`, error);
+      return [];
+    }
+  }
+
+  // Load single object data from localStorage
+  loadObject<T extends StorageObject>(key: string): T | null {
+    try {
+      if (!this.isLocalStorageAvailable()) {
+        this.error('localStorage not available, returning null');
+        return null;
+      }
+
+      const serialized = localStorage.getItem(key);
+      if (!serialized) {
+        this.log(`No data found for key: ${key}`);
+        return null;
+      }
+
+      const data = JSON.parse(serialized);
+      
+      if (Array.isArray(data)) {
+        this.error(`Expected object data for key ${key}, but got array`);
+        return null;
+      } else {
         this.log(`Loaded object from ${key}`, { key });
         return data;
       }
     } catch (error) {
-      this.error(`Failed to load data from ${key}`, error);
-      return [];
+      this.error(`Failed to load object data from ${key}`, error);
+      return null;
+    }
+  }
+
+  // Legacy load method for backward compatibility
+  load<T extends StorageItem>(key: string): T[];
+  load<T extends StorageObject>(key: string): T | null;
+  load<T extends StorageItem | StorageObject>(key: string): T[] | T | null {
+    // This is a simplified approach - we'll try to determine the type based on common patterns
+    const arrayKeys = ['foodItems', 'kitItems', 'goBags'];
+    if (arrayKeys.includes(key)) {
+      return this.loadArray(key) as any;
+    } else {
+      return this.loadObject(key) as any;
     }
   }
 

@@ -51,7 +51,7 @@ export function FinancialPreparedness() {
   })
 
   useEffect(() => {
-    const saved = storage.load<FinancialData>("financialData")
+    const saved = storage.loadObject<FinancialData>("financialData")
     if (saved) {
       setData(saved)
     } else {

@@ -36,7 +36,7 @@ export function WaterStorageCalculator() {
   })
 
   useEffect(() => {
-    const saved = storage.load<WaterStorageData>("waterStorage")
+    const saved = storage.loadObject<WaterStorageData>("waterStorage")
     if (saved) {
       setData(saved)
     } else {
