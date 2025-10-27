@@ -14,15 +14,20 @@ import { NotificationsSettings } from "@/components/notifications-settings"
 import { AnalyticsDashboard } from "@/components/analytics-dashboard"
 import { PWAInstaller } from "@/components/pwa-installer"
 import { SwipeGesture, useMobileDetection, PullToRefresh } from "@/components/mobile-gestures"
+import { AuthGuard } from "@/components/auth/auth-guard"
+import { UserSettings } from "@/components/auth/user-settings"
+import { useAuth } from "@/hooks/use-auth"
+import { Settings, LogOut } from "lucide-react"
 
-type Page = "dashboard" | "food" | "kit" | "kitcheck" | "gobag" | "water" | "financial" | "communication" | "notifications" | "analytics"
+type Page = "dashboard" | "food" | "kit" | "kitcheck" | "gobag" | "water" | "financial" | "communication" | "notifications" | "analytics" | "settings"
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<Page>("dashboard")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { isMobile, isTablet } = useMobileDetection()
+  const { user, logout } = useAuth()
 
-  const pages: Page[] = ["dashboard", "food", "kit", "kitcheck", "gobag", "water", "financial", "communication", "analytics", "notifications"]
+  const pages: Page[] = ["dashboard", "food", "kit", "kitcheck", "gobag", "water", "financial", "communication", "analytics", "notifications", "settings"]
   const currentIndex = pages.indexOf(currentPage)
 
   const handleSwipeLeft = () => {
@@ -43,40 +48,50 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* PWA Installer */}
-      <div className="p-4">
-        <PWAInstaller />
-      </div>
-
-      {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-slate-200 shadow-lg">
-        <div className="flex items-center justify-between px-4 py-4 md:py-6">
-          <button 
-            onClick={() => setCurrentPage("dashboard")}
-            className="flex items-center gap-3 md:gap-4 hover:opacity-80 transition-opacity duration-200 active:scale-95"
-            aria-label="Go to Dashboard"
-          >
-            <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg">
-              <span className="text-xl md:text-2xl">🛡️</span>
-            </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-slate-800">Emergency Supply Manager</h1>
-              <p className="text-xs md:text-sm text-slate-600 hidden md:block">Emergency Preparedness System</p>
-            </div>
-          </button>
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-            className="md:hidden p-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all duration-200 active:scale-95"
-            aria-label="Toggle menu"
-          >
-            <div className="w-6 h-6 flex flex-col justify-center items-center">
-              <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? 'rotate-45 translate-y-1' : '-translate-y-1'}`}></span>
-              <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-              <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? '-rotate-45 -translate-y-1' : 'translate-y-1'}`}></span>
-            </div>
-          </button>
+    <AuthGuard>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+        {/* PWA Installer */}
+        <div className="p-4">
+          <PWAInstaller />
         </div>
+
+        {/* Header */}
+        <header className="sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-slate-200 shadow-lg">
+          <div className="flex items-center justify-between px-4 py-4 md:py-6">
+            <button 
+              onClick={() => setCurrentPage("dashboard")}
+              className="flex items-center gap-3 md:gap-4 hover:opacity-80 transition-opacity duration-200 active:scale-95"
+              aria-label="Go to Dashboard"
+            >
+              <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg">
+                <span className="text-xl md:text-2xl">🛡️</span>
+              </div>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-slate-800">Emergency Supply Manager</h1>
+                <p className="text-xs md:text-sm text-slate-600 hidden md:block">Emergency Preparedness System</p>
+              </div>
+            </button>
+            
+            {/* User Info and Actions */}
+            <div className="flex items-center gap-3">
+              {user && (
+                <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg">
+                  <span className="text-sm text-slate-700">Welcome, {user.username}</span>
+                </div>
+              )}
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+                className="md:hidden p-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all duration-200 active:scale-95"
+                aria-label="Toggle menu"
+              >
+                <div className="w-6 h-6 flex flex-col justify-center items-center">
+                  <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? 'rotate-45 translate-y-1' : '-translate-y-1'}`}></span>
+                  <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+                  <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? '-rotate-45 -translate-y-1' : 'translate-y-1'}`}></span>
+                </div>
+              </button>
+            </div>
+          </div>
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
@@ -212,6 +227,19 @@ export default function Home() {
                 <div className="flex items-center gap-3">
                   <span className="text-lg">🔔</span>
                   <span>Notifications</span>
+                </div>
+              </Button>
+              <Button
+                variant={currentPage === "settings" ? "default" : "ghost"}
+                onClick={() => {
+                  setCurrentPage("settings")
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full justify-start text-sm py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <div className="flex items-center gap-3">
+                  <Settings className="h-4 w-4" />
+                  <span>Settings</span>
                 </div>
               </Button>
             </div>
@@ -358,6 +386,19 @@ export default function Home() {
                 </div>
               </div>
             </Button>
+            <Button
+              variant={currentPage === "settings" ? "default" : "ghost"}
+              onClick={() => setCurrentPage("settings")}
+              className={`w-full justify-start text-base py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 group ${currentPage === "settings" ? "" : "hover:bg-slate-100"}`}
+            >
+              <div className="flex items-center gap-3">
+                <Settings className="h-5 w-5 group-hover:scale-110 transition-transform duration-200" />
+                <div className="text-left">
+                  <div className={`font-medium ${currentPage === "settings" ? "text-white" : "text-slate-800 group-hover:text-slate-900"}`}>Settings</div>
+                  <div className={`text-xs ${currentPage === "settings" ? "text-blue-100" : "text-slate-500 group-hover:text-slate-700"}`}>Account & Security</div>
+                </div>
+              </div>
+            </Button>
           </nav>
         </aside>
 
@@ -380,11 +421,13 @@ export default function Home() {
                 {currentPage === "communication" && <CommunicationPlan />}
                 {currentPage === "analytics" && <AnalyticsDashboard />}
                 {currentPage === "notifications" && <NotificationsSettings />}
+                {currentPage === "settings" && <UserSettings />}
               </div>
             </SwipeGesture>
           </PullToRefresh>
         </main>
       </div>
     </div>
+    </AuthGuard>
   )
 }
