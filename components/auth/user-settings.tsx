@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useAuth } from '@/hooks/use-auth'
+import { StorageManagement } from '@/components/storage-management'
 import { Eye, EyeOff, Lock, User, LogOut, Key, Shield, AlertCircle } from 'lucide-react'
 
 export function UserSettings() {
@@ -269,6 +270,9 @@ export function UserSettings() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Storage Management */}
+      <StorageManagement />
     </div>
   )
 }
