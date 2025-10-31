@@ -16,10 +16,11 @@ import { PWAInstaller } from "@/components/pwa-installer"
 import { SwipeGesture, useMobileDetection, PullToRefresh } from "@/components/mobile-gestures"
 import { AuthGuard } from "@/components/auth/auth-guard"
 import { UserSettings } from "@/components/auth/user-settings"
+import { CloudStorageManager } from "@/components/cloud-storage-manager"
 import { useAuth } from "@/hooks/use-auth"
-import { Settings, LogOut } from "lucide-react"
+import { Settings, LogOut, Cloud } from "lucide-react"
 
-type Page = "dashboard" | "food" | "kit" | "kitcheck" | "gobag" | "water" | "financial" | "communication" | "notifications" | "analytics" | "settings"
+type Page = "dashboard" | "food" | "kit" | "kitcheck" | "gobag" | "water" | "financial" | "communication" | "notifications" | "analytics" | "settings" | "cloud"
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<Page>("dashboard")
@@ -27,7 +28,7 @@ export default function Home() {
   const { isMobile, isTablet } = useMobileDetection()
   const { user, logout } = useAuth()
 
-  const pages: Page[] = ["dashboard", "food", "kit", "kitcheck", "gobag", "water", "financial", "communication", "analytics", "notifications", "settings"]
+  const pages: Page[] = ["dashboard", "food", "kit", "kitcheck", "gobag", "water", "financial", "communication", "analytics", "notifications", "settings", "cloud"]
   const currentIndex = pages.indexOf(currentPage)
 
   const handleSwipeLeft = () => {
@@ -242,6 +243,19 @@ export default function Home() {
                   <span>Settings</span>
                 </div>
               </Button>
+              <Button
+                variant={currentPage === "cloud" ? "default" : "ghost"}
+                onClick={() => {
+                  setCurrentPage("cloud")
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full justify-start text-sm py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <div className="flex items-center gap-3">
+                  <Cloud className="h-4 w-4" />
+                  <span>Cloud Storage</span>
+                </div>
+              </Button>
             </div>
           </nav>
         )}
@@ -399,6 +413,19 @@ export default function Home() {
                 </div>
               </div>
             </Button>
+            <Button
+              variant={currentPage === "cloud" ? "default" : "ghost"}
+              onClick={() => setCurrentPage("cloud")}
+              className={`w-full justify-start text-base py-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 group ${currentPage === "cloud" ? "" : "hover:bg-slate-100"}`}
+            >
+              <div className="flex items-center gap-3">
+                <Cloud className="h-5 w-5 group-hover:scale-110 transition-transform duration-200" />
+                <div className="text-left">
+                  <div className={`font-medium ${currentPage === "cloud" ? "text-white" : "text-slate-800 group-hover:text-slate-900"}`}>Cloud Storage</div>
+                  <div className={`text-xs ${currentPage === "cloud" ? "text-blue-100" : "text-slate-500 group-hover:text-slate-700"}`}>Sync & Backup</div>
+                </div>
+              </div>
+            </Button>
           </nav>
         </aside>
 
@@ -422,6 +449,7 @@ export default function Home() {
                 {currentPage === "analytics" && <AnalyticsDashboard />}
                 {currentPage === "notifications" && <NotificationsSettings />}
                 {currentPage === "settings" && <UserSettings />}
+                {currentPage === "cloud" && <CloudStorageManager />}
               </div>
             </SwipeGesture>
           </PullToRefresh>

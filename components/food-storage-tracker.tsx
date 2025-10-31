@@ -4,13 +4,22 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type { FoodItem } from "@/lib/types"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import type { FoodItem, GoBag } from "@/lib/types"
 import { storage } from "@/lib/storage"
 
 export function FoodStorageTracker() {
   const [items, setItems] = useState<FoodItem[]>([])
+  const [goBags, setGoBags] = useState<GoBag[]>([])
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [useCustomLocation, setUseCustomLocation] = useState(false)
   const [formData, setFormData] = useState<{
     name: string
     quantity: string
@@ -31,7 +40,19 @@ export function FoodStorageTracker() {
     const saved = storage.load<FoodItem>("foodItems")
     setItems(saved)
     console.log(`[FoodStorage] Loaded ${saved.length} items from storage`)
+
+    const savedGoBags = storage.load<GoBag>("goBags")
+    setGoBags(savedGoBags)
+    console.log(`[FoodStorage] Loaded ${savedGoBags.length} go bags`)
   }, [])
+
+  // Reload go bags when form is opened to ensure dropdown is up-to-date
+  useEffect(() => {
+    if (showForm) {
+      const savedGoBags = storage.load<GoBag>("goBags")
+      setGoBags(savedGoBags)
+    }
+  }, [showForm])
 
   const saveItems = (newItems: FoodItem[]) => {
     setItems(newItems)
@@ -79,10 +100,15 @@ export function FoodStorageTracker() {
       location: "",
       category: "other",
     })
+    setUseCustomLocation(false)
     setShowForm(false)
   }
 
   const handleEdit = (item: FoodItem) => {
+    // Check if location matches a go bag name
+    const isGoBagLocation = goBags.some(bag => bag.name === item.location)
+    setUseCustomLocation(!isGoBagLocation)
+    
     setFormData({
       name: item.name,
       quantity: item.quantity.toString(),
@@ -148,6 +174,7 @@ export function FoodStorageTracker() {
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full rounded-md border border-input bg-background px-3 py-2"
+                  aria-label="Category"
                 >
                   <option value="grains">Grains</option>
                   <option value="proteins">Proteins</option>
@@ -185,11 +212,57 @@ export function FoodStorageTracker() {
               </div>
               <div>
                 <label className="text-sm font-medium">Storage Location</label>
-                <Input
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="e.g., Pantry, Freezer"
-                />
+                {useCustomLocation ? (
+                  <div className="space-y-2">
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      placeholder="e.g., Pantry, Freezer"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setUseCustomLocation(false)
+                        setFormData({ ...formData, location: "" })
+                      }}
+                      className="h-auto p-1 text-xs"
+                    >
+                      ← Select from Go Bags
+                    </Button>
+                  </div>
+                ) : (
+                  <Select
+                    value={formData.location || ""}
+                    onValueChange={(value) => {
+                      if (value === "custom") {
+                        setUseCustomLocation(true)
+                        setFormData({ ...formData, location: "" })
+                      } else {
+                        setFormData({ ...formData, location: value })
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full" aria-label="Storage location">
+                      <SelectValue placeholder="Select storage location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {goBags.length > 0 ? (
+                        <>
+                          {goBags.map((bag) => (
+                            <SelectItem key={bag.id} value={bag.name}>
+                              {bag.name}
+                            </SelectItem>
+                          ))}
+                          <SelectItem value="custom">Custom Location...</SelectItem>
+                        </>
+                      ) : (
+                        <SelectItem value="custom">Custom Location...</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
             <div className="flex gap-2">
@@ -199,6 +272,7 @@ export function FoodStorageTracker() {
                 onClick={() => {
                   setShowForm(false)
                   setEditingId(null)
+                  setUseCustomLocation(false)
                   setFormData({
                     name: "",
                     quantity: "",
