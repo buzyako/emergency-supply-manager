@@ -10,12 +10,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { storage, StorageObject } from "@/lib/storage"
 
+const LITERS_PER_GALLON = 3.78541
+const MINIMUM_DAYS = 3
+const LITERS_PER_PERSON_PER_DAY = LITERS_PER_GALLON
+const ROUND_TO_DECIMALS = (value: number, decimals = 1) =>
+  Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals)
+
 interface WaterStorageData extends StorageObject {
   familySize: number
-  currentStorage: number // in gallons
-  targetStorage: number // in gallons
+  currentStorage: number // in liters
+  targetStorage: number // in liters
   storageLocations: string[]
   notes: string
+  unit?: "gallons" | "liters"
 }
 
 export function WaterStorageCalculator() {
@@ -38,16 +45,29 @@ export function WaterStorageCalculator() {
   useEffect(() => {
     const saved = storage.loadObject<WaterStorageData>("waterStorage")
     if (saved) {
-      setData(saved)
+      if (!saved.unit || saved.unit === "gallons") {
+        const convertedData: WaterStorageData = {
+          ...saved,
+          unit: "liters",
+          currentStorage: ROUND_TO_DECIMALS(saved.currentStorage * LITERS_PER_GALLON),
+          targetStorage: ROUND_TO_DECIMALS(saved.targetStorage * LITERS_PER_GALLON),
+          lastUpdated: new Date().toISOString()
+        }
+        setData(convertedData)
+        storage.save("waterStorage", convertedData)
+      } else {
+        setData(saved)
+      }
     } else {
       // Initialize with default values
       const defaultData: WaterStorageData = {
         familySize: 1,
         currentStorage: 0,
-        targetStorage: 3, // 3 days minimum
+        targetStorage: ROUND_TO_DECIMALS(MINIMUM_DAYS * LITERS_PER_PERSON_PER_DAY),
         lastUpdated: new Date().toISOString(),
         storageLocations: [],
-        notes: ""
+        notes: "",
+        unit: "liters"
       }
       setData(defaultData)
     }
@@ -55,15 +75,16 @@ export function WaterStorageCalculator() {
 
   useEffect(() => {
     if (data.familySize > 0) {
-      // Calculate target storage: 1 gallon per person per day for 3 days minimum
-      const target = data.familySize * 3
-      setData(prev => ({ ...prev, targetStorage: target }))
+      // Calculate target storage: 3.8 liters per person per day for 3 days minimum
+      const target = data.familySize * MINIMUM_DAYS * LITERS_PER_PERSON_PER_DAY
+      setData(prev => ({ ...prev, targetStorage: ROUND_TO_DECIMALS(target), unit: "liters" }))
     }
   }, [data.familySize])
 
   const saveData = (newData: WaterStorageData) => {
-    setData(newData)
-    const success = storage.save("waterStorage", newData)
+    const dataToSave = { ...newData, unit: "liters" as const }
+    setData(dataToSave)
+    const success = storage.save("waterStorage", dataToSave)
     if (success) {
       console.log("[WaterStorage] Successfully saved data")
     } else {
@@ -74,7 +95,7 @@ export function WaterStorageCalculator() {
 
   const handleUpdateFamilySize = () => {
     const familySize = parseInt(formData.familySize) || 1
-    const targetStorage = familySize * 3 // 3 days minimum
+    const targetStorage = ROUND_TO_DECIMALS(familySize * MINIMUM_DAYS * LITERS_PER_PERSON_PER_DAY)
     
     const updatedData = {
       ...data,
@@ -108,7 +129,8 @@ export function WaterStorageCalculator() {
   }
 
   const progressPercentage = data.targetStorage > 0 ? Math.min((data.currentStorage / data.targetStorage) * 100, 100) : 0
-  const daysOfWater = data.familySize > 0 ? Math.floor(data.currentStorage / data.familySize) : 0
+  const daysOfWater =
+    data.familySize > 0 ? Math.floor(data.currentStorage / (data.familySize * LITERS_PER_PERSON_PER_DAY)) : 0
 
   const getProgressColor = (percentage: number) => {
     if (percentage >= 100) return "bg-green-500"
@@ -150,7 +172,7 @@ export function WaterStorageCalculator() {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">{data.currentStorage.toFixed(1)}</div>
-              <div className="text-sm text-slate-600">Gallons Stored</div>
+              <div className="text-sm text-slate-600">Liters Stored</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">{daysOfWater}</div>
@@ -209,7 +231,7 @@ export function WaterStorageCalculator() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="currentStorage">Gallons to Add</Label>
+              <Label htmlFor="currentStorage">Liters to Add</Label>
               <Input
                 id="currentStorage"
                 type="number"
@@ -217,7 +239,7 @@ export function WaterStorageCalculator() {
                 step="0.1"
                 value={formData.currentStorage}
                 onChange={(e) => setFormData(prev => ({ ...prev, currentStorage: e.target.value }))}
-                placeholder="Enter gallons"
+                placeholder="Enter liters"
               />
             </div>
             <div className="space-y-2">
@@ -264,7 +286,7 @@ export function WaterStorageCalculator() {
           <div className="text-sm space-y-2">
             <p><strong>Minimum Requirements:</strong></p>
             <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>1 gallon per person per day (3 days minimum)</li>
+              <li>3.8 liters (~1 gallon) per person per day (3 days minimum)</li>
               <li>Store in food-grade containers</li>
               <li>Rotate water every 6 months</li>
               <li>Store in cool, dark locations</li>
@@ -272,7 +294,7 @@ export function WaterStorageCalculator() {
             
             <p className="mt-4"><strong>Recommended Storage:</strong></p>
             <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>2 weeks of water (14 gallons per person)</li>
+              <li>2 weeks of water (53 liters per person)</li>
               <li>Multiple storage locations</li>
               <li>Water purification tablets as backup</li>
               <li>Portable water filters for extended emergencies</li>
